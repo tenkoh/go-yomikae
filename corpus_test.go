@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -84,9 +85,10 @@ func TestSpans(t *testing.T) {
 	}
 }
 
-// TestRealModel runs the C2K weights named by YOMIKAE_C2K_MODEL with the
-// bundled NGram data over the corpus.
-func TestRealModel(t *testing.T) {
+// realConverter builds a Converter from the C2K weights named by
+// YOMIKAE_C2K_MODEL, the bundled NGram data and the builtin dictionaries.
+func realConverter(t *testing.T) *Converter {
+	t.Helper()
 	path := os.Getenv("YOMIKAE_C2K_MODEL")
 	if path == "" {
 		t.Skip("YOMIKAE_C2K_MODEL is not set")
@@ -104,7 +106,12 @@ func TestRealModel(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	c := newConverter(t, Options{Dictionaries: builtin(t), Model: model, Judge: judge})
+	return newConverter(t, Options{Dictionaries: builtin(t), Model: model, Judge: judge})
+}
+
+// TestRealModel runs the real model over the corpus.
+func TestRealModel(t *testing.T) {
+	c := realConverter(t)
 
 	tests := []struct{ in, want string }{
 		{"updateする", "アップデートする"},
@@ -122,5 +129,34 @@ func TestRealModel(t *testing.T) {
 		if script.HasLetter(r.Text) {
 			t.Errorf("Convert(%q) = %q has a letter", line, r.Text)
 		}
+	}
+}
+
+// TestGold reports how many readings in testdata/gold.tsv match an acceptable
+// reading. The design asks for at least 70%.
+func TestGold(t *testing.T) {
+	c := realConverter(t)
+	data, err := os.ReadFile("testdata/gold.tsv")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var total, ok int
+	for _, line := range strings.Split(string(data), "\n") {
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		in, want, _ := strings.Cut(line, "\t")
+		got := convert(t, c, in).Text
+		total++
+		if slices.Contains(strings.Split(want, "|"), got) {
+			ok++
+		} else {
+			t.Logf("%s → %s, want %s", in, got, want)
+		}
+	}
+	rate := float64(ok) / float64(total)
+	t.Logf("gold: %d/%d acceptable (%.0f%%)", ok, total, 100*rate)
+	if rate < 0.7 {
+		t.Errorf("gold rate %.2f is below 0.70", rate)
 	}
 }
