@@ -86,7 +86,7 @@ license = "MIT"
 case_sensitive = false
 
 [literal]
-Irodori = "イロドリ"
+yomikae = "ヨミカエ"
 ".py" = "ドットパイ"
 
 [[regex]]
