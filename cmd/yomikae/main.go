@@ -7,8 +7,8 @@
 //	yomikae stats [flags] file ...        show span and piece distributions
 //	yomikae serve [flags]                 run an OpenAI-compatible TTS proxy
 //
-// Every flag has an environment variable; a flag beats its variable. Run a
-// subcommand with -h for its flags.
+// Every flag shared by the subcommands has an environment variable; a flag
+// beats its variable. Run a subcommand with -h for its flags.
 package main
 
 import (

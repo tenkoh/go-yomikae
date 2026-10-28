@@ -1,42 +1,77 @@
 # go-yomikae
 
-日本語 TTS (IrodoriTTS) に渡すテキストから英字を取り除き、カナの読みに置き換える。
-Go のライブラリ、CLI、speech.cpp の前に置く OpenAI 互換プロキシとして使える。
+go-yomikae は、OpenAI 互換の音声合成 (TTS) サーバーの前に置くリバースプロキシだ。
+`POST /v1/audio/speech` の `input` から英字を取り除き、カナの読みに置き換えてからサーバーへ転送する。
 
 ```text
-ClaudeにGitHubのREADME.mdを読ませたら、v1.2のmp3が5Gで届いた。
-クロードにギットハブのリードミードットエムディーを読ませたら、ヴィー1.2のエムピー3が5ジーで届いた。
+受け取った input: ClaudeにGitHubのREADME.mdを読ませたら、v1.2のmp3が5Gで届いた。
+転送する input:   クロードにギットハブのリードミードットエムディーを読ませたら、ヴィー1.2のエムピー3が5ジーで届いた。
 ```
 
-- 出力には英字が残らない。全角英字、`㎏` や `™` のような互換文字、ギリシャ文字も読みに置き換わる。
-- 英字を含まない文は、同じバイト列のまま返る。
+同じ変換は、Go のライブラリと `yomikae` コマンドからも使える。
+
+## 英字をカナにしてから渡す理由
+
+LLM の出力には、製品名、コマンド、頭字語、単位といった英字が多く混ざる。手元の LLM 出力では、7 割の行が英字を含んでいた。
+日本語の TTS モデルがこれらをどう読むかは、モデル次第だ。IrodoriTTS に読ませて書き起こすと、`café` は「ケフレイ」、ギリシャ文字の `α` は「あー」になった。
+モデルが外した読みは、利用者の側からは直せない。
+
+go-yomikae は、英字がモデルに届く前にカナへ置き換える。読みを決めるのはモデルではなく go-yomikae なので、外れた読みは辞書で直せる。
+どの英字をどの手段で読んだかは、追跡情報で確かめられる。
+
+go-yomikae は日本語の TTS を使う技術者向けで、主に IrodoriTTS と speech.cpp の組み合わせで確かめている。
+調査と測定の結果は [docs/design.md](docs/design.md) にある。
+
+## 変換の決まり
+
+- 出力に英字は残らない。全角英字、`㎏` や `™` のような互換文字、ギリシャ文字も読みに置き換える。
+- 英字を含まない文は、同じバイト列のまま返す。
 - 数字と記号は変えない。
-- 英単語は [e2k-go](https://github.com/tenkoh/e2k-go) でカタカナにし、頭字語と一文字は文字ごとに読む。
-  読めないものも文字ごとの読みに落とすので、英字が残ることはない。
+- 辞書の項目を最優先する。同梱辞書は IT 用語と単位を収める。
+- 辞書にない英単語は [e2k-go](https://github.com/tenkoh/e2k-go) でカタカナにする。頭字語と一文字は、文字ごとに読む。
+- e2k-go が読めない語も文字ごとの読みに落とすので、英字は残らない。
 
-設計と、その根拠にした調査は [docs/design.md](docs/design.md) にある。
+## プロキシを動かす
 
-## 用意するもの
+1. C2K の重み (`model-c2k.safetensors`) をダウンロードする。手順は [docs/models.md](docs/models.md) にある。
+   重みはライセンスの都合で同梱していない。
 
-C2K の重み (`model-c2k.safetensors`) を一度だけダウンロードする。手順は [docs/models.md](docs/models.md) にある。
-重みはライセンスの都合で同梱していない。NGram のデータは同梱している。
+2. `yomikae` をインストールする。
 
-## インストール
+   ```bash
+   go install github.com/tenkoh/go-yomikae/cmd/yomikae@latest
+   ```
 
-```bash
-go install github.com/tenkoh/go-yomikae/cmd/yomikae@latest
-```
+3. TTS サーバーを `-upstream` に指定して、プロキシを起動する。
 
-## CLI で変換する
+   ```bash
+   yomikae serve -c2k model-c2k.safetensors -upstream http://127.0.0.1:8080
+   ```
 
-標準入力かファイルを一行ずつ変換し、標準出力に書く。
+   プロキシは `127.0.0.1:8081` で待ち受ける。変えるときは `-listen` を指定する。
+
+4. クライアントの送り先を、TTS サーバーからプロキシに変える。OpenAI の SDK なら、base URL を `http://127.0.0.1:8081/v1` にする。
+
+## プロキシが書き換える範囲
+
+プロキシが書き換えるのは、`POST /v1/audio/speech` の本文のうち、いちばん外側の JSON オブジェクトにある `input` の文字列だけだ。
+パス、メソッド、ヘッダ、ほかのメンバーは変えない。ほかのエンドポイントへのリクエストは、そのまま転送する。
+応答は溜めずに流すので、SSE や PCM のストリームもそのまま届く。
+
+対象のパスは、今は `/v1/audio/speech` に限っている。OpenAI 互換の API では `/v1/embeddings` や `/v1/responses` も `input` を持つので、全パスを書き換えると TTS 以外の入力まで変わってしまう。
+パスの前に何か付くサーバー (`/api/v1/audio/speech` など) では、何も変換されずに転送される。
+
+上限、エラーの応答、細かい条件は [docs/reference.md](docs/reference.md#プロキシ) にある。
+
+## コマンドで変換する
+
+`yomikae` に文を渡すと、変換した文を標準出力に書く。プロキシに入れる前に、読みを確かめるのに使える。
 
 ```bash
 echo "GitHubで10kgのv1.2" | yomikae -c2k model-c2k.safetensors
 ```
 
-`-trace` を付けると、置き換えごとに JSON を一行ずつ標準エラーに書く。元のバイト範囲、使った手段
-(`dictionary`、`model`、`spell`、`drop`)、辞書のルール、結果が分かる。
+`-trace` を付けると、置き換えごとの記録を JSON で標準エラーに書く。範囲、手段 (`dictionary`、`model`、`spell`、`drop`)、当たった辞書の項目が分かる。
 
 ```bash
 echo "GitHubで10kgのv1.2" | yomikae -c2k model-c2k.safetensors -trace
@@ -44,53 +79,7 @@ echo "GitHubで10kgのv1.2" | yomikae -c2k model-c2k.safetensors -trace
 
 `yomikae stats -check` はファイルの英字スパンの種類と読みの手段を集計し、英字が残った行があれば失敗する。
 
-## プロキシとして動かす
-
-speech.cpp の前に置くと、`POST /v1/audio/speech` の `input` だけを書き換えて転送する。
-ほかのメンバー、ヘッダ、ほかのエンドポイントはそのまま通す。SSE と PCM の応答は溜めずに流す。
-
-```bash
-yomikae serve -c2k model-c2k.safetensors -upstream http://127.0.0.1:8080 -listen 127.0.0.1:8081
-```
-
-クライアントは `http://127.0.0.1:8081/v1/audio/speech` に送る。
-
-## 設定
-
-フラグが環境変数より優先する。`-dict` を一つでも指定すると、`YOMIKAE_DICTS` は使わない。
-
-| フラグ | 環境変数 | 意味 |
-| --- | --- | --- |
-| `-c2k` | `YOMIKAE_C2K_MODEL` | C2K の重みのパス |
-| `-missing-model` | `YOMIKAE_MISSING_MODEL` | 重みがないとき。`error` (既定) で起動を止め、`spell` で警告を出して文字ごとに読む |
-| `-ngram` | `YOMIKAE_NGRAM_MODEL` | 同梱の代わりに使う NGram データのパス。`none` で簡易判定 |
-| `-dict` | `YOMIKAE_DICTS` | 辞書の TOML ファイル。繰り返し指定でき、後のファイルが優先する。環境変数は `:` 区切り |
-| `-no-builtin-dicts` | `YOMIKAE_NO_BUILTIN_DICTS` | 同梱辞書 (IT 用語と単位) を読まない |
-| `-licenses` | | 同梱データのライセンス表示を出す |
-
-## 辞書を書く
-
-辞書は TOML で書く。リテラルの項目が既定で、正規表現は `[[regex]]` に書いた項目だけで使う。
-
-```toml
-name = "mydict"
-case_sensitive = false
-
-[literal]
-Irodori = "イロドリ"
-".py" = "ドットパイ"
-
-[[regex]]
-id = "semver"
-pattern = 'v(\d+)\.(\d+)'
-replace = "バージョン$1.$2"
-```
-
-読みに英字が入っていると、読み込み時にエラーになる。キャプチャに英字が残っていれば、
-その部分も変換してから置き換える。一致が重なったときは、最も左、次に最も長い一致を選ぶ。
-長さも同じなら、後に指定した辞書が勝つ。同梱辞書は [dict/builtin](dict/builtin) にある。
-
-## ライブラリとして使う
+## Go から使う
 
 ```go
 f, _ := os.Open("model-c2k.safetensors")
@@ -102,7 +91,27 @@ r, _ := c.Convert(ctx, "GitHubで10kg")
 fmt.Println(r.Text) // ギットハブで10キログラム
 ```
 
-`Options.Model` は `ConvertContext(ctx, s) (string, error)` を持つ型なら何でもよい。テストでは偽物に差し替えられる。
+## 読みを辞書で直す
+
+辞書は TOML で書き、`-dict` で指定する。後に指定した辞書ほど優先する。
+
+```toml
+name = "mydict"
+
+[literal]
+Irodori = "イロドリ"
+
+[[regex]]
+id = "semver"
+pattern = 'v(\d+)\.(\d+)'
+replace = "バージョン$1.$2"
+```
+
+```bash
+yomikae serve -c2k model-c2k.safetensors -upstream http://127.0.0.1:8080 -dict mydict.toml
+```
+
+読みに英字が入っていると、読み込み時にエラーになる。辞書の形式、一致の優先順、すべてのフラグと環境変数は [docs/reference.md](docs/reference.md) にある。
 
 ## ライセンス
 
