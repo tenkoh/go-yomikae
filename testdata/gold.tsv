@@ -1,0 +1,62 @@
+# Draft gold set for the tertiary metric. Columns: input, acceptable readings separated by |.
+# Written by Claude as a starting point; a human must review every row before the score counts.
+update	アップデート
+release	リリース
+install	インストール
+download	ダウンロード
+server	サーバー|サーバ
+cloud	クラウド
+data	データ
+machine learning	マシン ラーニング|マシーン ラーニング
+deep learning	ディープ ラーニング
+model	モデル
+Tokyo	トーキョー|トウキョウ
+Microsoft	マイクロソフト
+Netflix	ネットフリックス
+Google	グーグル
+Amazon	アマゾン
+Apple	アップル
+iPhone	アイフォン|アイフォーン
+YouTube	ユーチューブ
+ChatGPT	チャットジーピーティー
+GitHub	ギットハブ
+JavaScript	ジャバスクリプト
+TypeScript	タイプスクリプト
+Python	パイソン
+Docker	ドッカー
+Kubernetes	クバネティス|クーベネティス
+Linux	リナックス
+API	エーピーアイ
+URL	ユーアールエル
+PDF	ピーディーエフ
+GPU	ジーピーユー
+USB-C	ユーエスビー-シー|ユーエスビーシー
+Wi-Fi	ワイファイ
+NASA	ナサ
+JSON	ジェイソン
+SQL	エスキューエル|シークェル
+AI	エーアイ
+5G	5ジー
+mp3	エムピー3
+H2O	エイチ2オー
+v1.2	ヴィー1.2|ブイ1.2|バージョン1.2
+COVID-19	コビッド-19|コビッドナインティーン
+getUserById	ゲットユーザーバイアイディー|ゲットユーザーバイアイディ
+useState	ユーズステート
+snake_case	スネーク_ケース
+config.yaml	コンフィグドットヤムル|コンフィグ.ヤムル
+main.go	メインドットゴー|メイン.ゴー
+npm install	エヌピーエム インストール
+10kg	10キログラム
+2.4GHz	2.4ギガヘルツ
+café	カフェ
+Pokémon	ポケモン
+ＰＤＦ	ピーディーエフ
+α	アルファ
+λ	ラムダ
+Excelファイル	エクセルファイル
+Gitで管理	ギットで管理
+Googleする	グーグルする
+hello world	ハロー ワールド|ヘロー ワールド
+smartphone	スマートフォン|スマートホン
+weekend	ウィークエンド

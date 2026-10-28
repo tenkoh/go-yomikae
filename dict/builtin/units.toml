@@ -1,0 +1,365 @@
+# Units of measure after a number, such as 10g, 2.4GHz, 5km/h and 90℃.
+# Patterns see the input after NFKC, so ℃ arrives as °C, ㎏ as kg, µ as μ and
+# ² as 2. Units are case sensitive (mg, MB), and one-letter units such as g
+# and m would hit ordinary words, so every unit entry is a regex that needs a
+# number before it. The leading group keeps a unit from matching inside an
+# identifier such as k8s or mp3: the number must start the text or follow a
+# character that is not a letter, a digit or a dot. Only multi-letter units
+# that cannot be mistaken for words also appear as literals.
+#
+# Written for go-yomikae; MIT License, see LICENSE.
+
+name = "units"
+license = "MIT"
+case_sensitive = true
+
+[literal]
+"°C" = "度"
+GHz = "ギガヘルツ"
+MHz = "メガヘルツ"
+kHz = "キロヘルツ"
+Mbps = "メガビーピーエス"
+Gbps = "ギガビーピーエス"
+kWh = "キロワットアワー"
+mAh = "ミリアンペアアワー"
+"km/h" = "キロメートル毎時"
+hPa = "ヘクトパスカル"
+mmHg = "ミリメートルエイチジー"
+GB = "ギガバイト"
+TB = "テラバイト"
+
+[[regex]]
+id = "mg"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?mg\b'
+replace = "$1$2ミリグラム"
+
+[[regex]]
+id = "μg"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?μg\b'
+replace = "$1$2マイクログラム"
+
+[[regex]]
+id = "kg"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?kg\b'
+replace = "$1$2キログラム"
+
+[[regex]]
+id = "g"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?g\b'
+replace = "$1$2グラム"
+
+[[regex]]
+id = "mm"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?mm\b'
+replace = "$1$2ミリメートル"
+
+[[regex]]
+id = "cm"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?cm\b'
+replace = "$1$2センチメートル"
+
+[[regex]]
+id = "km"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?km\b'
+replace = "$1$2キロメートル"
+
+[[regex]]
+id = "μm"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?μm\b'
+replace = "$1$2マイクロメートル"
+
+[[regex]]
+id = "nm"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?nm\b'
+replace = "$1$2ナノメートル"
+
+[[regex]]
+id = "m"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?m\b'
+replace = "$1$2メートル"
+
+[[regex]]
+id = "m2"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?m2\b'
+replace = "$1$2平方メートル"
+
+[[regex]]
+id = "km2"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?km2\b'
+replace = "$1$2平方キロメートル"
+
+[[regex]]
+id = "mL"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?mL\b'
+replace = "$1$2ミリリットル"
+
+[[regex]]
+id = "dL"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?dL\b'
+replace = "$1$2デシリットル"
+
+[[regex]]
+id = "L"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?L\b'
+replace = "$1$2リットル"
+
+[[regex]]
+id = "cc"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?cc\b'
+replace = "$1$2シーシー"
+
+[[regex]]
+id = "ms"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?ms\b'
+replace = "$1$2ミリ秒"
+
+[[regex]]
+id = "μs"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?μs\b'
+replace = "$1$2マイクロ秒"
+
+[[regex]]
+id = "ns"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?ns\b'
+replace = "$1$2ナノ秒"
+
+[[regex]]
+id = "s"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?s\b'
+replace = "$1$2秒"
+
+[[regex]]
+id = "sec"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?sec\b'
+replace = "$1$2秒"
+
+[[regex]]
+id = "min"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?min\b'
+replace = "$1$2分"
+
+[[regex]]
+id = "h"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?h\b'
+replace = "$1$2時間"
+
+[[regex]]
+id = "Hz"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?Hz\b'
+replace = "$1$2ヘルツ"
+
+[[regex]]
+id = "kHz"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?kHz\b'
+replace = "$1$2キロヘルツ"
+
+[[regex]]
+id = "MHz"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?MHz\b'
+replace = "$1$2メガヘルツ"
+
+[[regex]]
+id = "GHz"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?GHz\b'
+replace = "$1$2ギガヘルツ"
+
+[[regex]]
+id = "KB"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?KB\b'
+replace = "$1$2キロバイト"
+
+[[regex]]
+id = "kB"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?kB\b'
+replace = "$1$2キロバイト"
+
+[[regex]]
+id = "MB"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?MB\b'
+replace = "$1$2メガバイト"
+
+[[regex]]
+id = "GB"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?GB\b'
+replace = "$1$2ギガバイト"
+
+[[regex]]
+id = "TB"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?TB\b'
+replace = "$1$2テラバイト"
+
+[[regex]]
+id = "PB"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?PB\b'
+replace = "$1$2ペタバイト"
+
+[[regex]]
+id = "KiB"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?KiB\b'
+replace = "$1$2キビバイト"
+
+[[regex]]
+id = "MiB"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?MiB\b'
+replace = "$1$2メビバイト"
+
+[[regex]]
+id = "GiB"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?GiB\b'
+replace = "$1$2ギビバイト"
+
+[[regex]]
+id = "bps"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?bps\b'
+replace = "$1$2ビーピーエス"
+
+[[regex]]
+id = "kbps"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?kbps\b'
+replace = "$1$2キロビーピーエス"
+
+[[regex]]
+id = "Mbps"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?Mbps\b'
+replace = "$1$2メガビーピーエス"
+
+[[regex]]
+id = "Gbps"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?Gbps\b'
+replace = "$1$2ギガビーピーエス"
+
+[[regex]]
+id = "fps"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?fps\b'
+replace = "$1$2エフピーエス"
+
+[[regex]]
+id = "px"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?px\b'
+replace = "$1$2ピクセル"
+
+[[regex]]
+id = "dpi"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?dpi\b'
+replace = "$1$2ディーピーアイ"
+
+[[regex]]
+id = "W"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?W\b'
+replace = "$1$2ワット"
+
+[[regex]]
+id = "kW"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?kW\b'
+replace = "$1$2キロワット"
+
+[[regex]]
+id = "Wh"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?Wh\b'
+replace = "$1$2ワットアワー"
+
+[[regex]]
+id = "kWh"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?kWh\b'
+replace = "$1$2キロワットアワー"
+
+[[regex]]
+id = "mA"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?mA\b'
+replace = "$1$2ミリアンペア"
+
+[[regex]]
+id = "mAh"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?mAh\b'
+replace = "$1$2ミリアンペアアワー"
+
+[[regex]]
+id = "V"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?V\b'
+replace = "$1$2ボルト"
+
+[[regex]]
+id = "Pa"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?Pa\b'
+replace = "$1$2パスカル"
+
+[[regex]]
+id = "hPa"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?hPa\b'
+replace = "$1$2ヘクトパスカル"
+
+[[regex]]
+id = "kPa"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?kPa\b'
+replace = "$1$2キロパスカル"
+
+[[regex]]
+id = "mmHg"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?mmHg\b'
+replace = "$1$2ミリメートルエイチジー"
+
+[[regex]]
+id = "dB"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?dB\b'
+replace = "$1$2デシベル"
+
+[[regex]]
+id = "cal"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?cal\b'
+replace = "$1$2カロリー"
+
+[[regex]]
+id = "kcal"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?kcal\b'
+replace = "$1$2キロカロリー"
+
+[[regex]]
+id = "°C"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?°C\b'
+replace = "$1$2度"
+
+[[regex]]
+id = "km/h"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?km\/h\b'
+replace = "$1$2キロメートル毎時"
+
+[[regex]]
+id = "m/s"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?m\/s\b'
+replace = "$1$2メートル毎秒"
+
+[[regex]]
+id = "m/s2"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?m\/s2\b'
+replace = "$1$2メートル毎秒毎秒"
+
+[[regex]]
+id = "g/dL"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?g\/dL\b'
+replace = "$1$2グラム毎デシリットル"
+
+[[regex]]
+id = "mg/dL"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?mg\/dL\b'
+replace = "$1$2ミリグラム毎デシリットル"
+
+[[regex]]
+id = "°F"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?°F\b'
+replace = "$1華氏$2度"
+
+# Ω ends in a letter outside \w, so these cannot end with \b.
+[[regex]]
+id = "ohm"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?Ω'
+replace = "$1$2オーム"
+
+[[regex]]
+id = "kohm"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?kΩ'
+replace = "$1$2キロオーム"
+
+[[regex]]
+id = "mohm"
+pattern = '(^|[^\p{Latin}\p{Greek}\d.])(\d+(?:\.\d+)?) ?MΩ'
+replace = "$1$2メガオーム"

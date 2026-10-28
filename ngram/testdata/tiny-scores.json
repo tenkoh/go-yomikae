@@ -1,0 +1,82 @@
+[
+ {
+  "word": "ab",
+  "score": -0.24880816380305137,
+  "pronounceable": true
+ },
+ {
+  "word": "ABA",
+  "score": -0.2453953316561816,
+  "pronounceable": true
+ },
+ {
+  "word": "c",
+  "score": -2.5988609810308723,
+  "pronounceable": false
+ },
+ {
+  "word": "abc",
+  "score": -1.131864710740286,
+  "pronounceable": false
+ },
+ {
+  "word": "cc",
+  "score": -2.651543453738289,
+  "pronounceable": false
+ },
+ {
+  "word": "bab",
+  "score": -0.6335469472909003,
+  "pronounceable": true
+ },
+ {
+  "word": "aabbcc",
+  "score": -1.9930669524849656,
+  "pronounceable": false
+ },
+ {
+  "word": "ba ab",
+  "score": -0.6597013890065655,
+  "pronounceable": true
+ },
+ {
+  "word": "a-b",
+  "score": -0.24880816380305137,
+  "pronounceable": true
+ },
+ {
+  "word": "x ab",
+  "score": -0.24880816380305137,
+  "pronounceable": true
+ },
+ {
+  "word": "ab\u001cc",
+  "score": -2.5988609810308723,
+  "pronounceable": false
+ },
+ {
+  "word": "ab\u3000ba",
+  "score": -0.6597013890065655,
+  "pronounceable": true
+ },
+ {
+  "word": " ab\t",
+  "score": -0.24880816380305137,
+  "pronounceable": true
+ },
+ {
+  "word": "",
+  "score": null,
+  "pronounceable": false
+ },
+ {
+  "word": "xyz",
+  "score": null,
+  "pronounceable": false
+ },
+ {
+  "word": "  ",
+  "score": null,
+  "pronounceable": false
+ }
+]
