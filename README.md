@@ -27,37 +27,36 @@ go-yomikae は、英字がモデルに届く前にカナへ置き換えます。
 
 ## プロキシを動かす
 
-1. 英単語をカタカナにするモデルの重み (`model-c2k.safetensors`) をダウンロードします。
-   重みはライセンスの都合で同梱していないので、[Patchethium/e2k](https://github.com/Patchethium/e2k) のリリースから一度だけ取得します。
+### 1. 重みをダウンロードする
 
-   ```bash
-   curl -fL -o model-c2k.safetensors https://github.com/Patchethium/e2k/releases/download/0.4.0/model-c2k.safetensors
-   ```
+英単語をカタカナにするモデルの重み (`model-c2k.safetensors`) をダウンロードします。
+重みはライセンスの都合で同梱していないので、[Patchethium/e2k](https://github.com/Patchethium/e2k) のリリースから一度だけ取得します。
 
-   ダウンロードしたら、SHA-256 を確かめます。
+```bash
+curl -fL -o model-c2k.safetensors https://github.com/Patchethium/e2k/releases/download/0.4.0/model-c2k.safetensors
+```
 
-   ```bash
-   shasum -a 256 model-c2k.safetensors
-   ```
+詳細な手順と重みのライセンスは [docs/models.md](docs/models.md) に表記してあります。
 
-   結果が `8dc015ba1574b386cacf54d498e9d418e3c03fb7da58a65b88bc81e454705ca1` なら正しいファイルです。
-   重みのライセンスと、同梱している NGram データについては [docs/models.md](docs/models.md) にあります。
+### 2. yomikae をインストールする
 
-2. `yomikae` をインストールします。
+```bash
+go install github.com/tenkoh/go-yomikae/cmd/yomikae@latest
+```
 
-   ```bash
-   go install github.com/tenkoh/go-yomikae/cmd/yomikae@latest
-   ```
+### 3. プロキシを起動する
 
-3. TTS サーバーを `-upstream` に指定して、プロキシを起動します。
+TTS サーバーを `-upstream` に指定して、プロキシを起動します。
 
-   ```bash
-   yomikae serve -c2k model-c2k.safetensors -upstream http://127.0.0.1:8080
-   ```
+```bash
+yomikae serve -c2k model-c2k.safetensors -upstream http://127.0.0.1:8080
+```
 
-   プロキシは `127.0.0.1:8081` で待ち受けます。変えるときは `-listen` を指定します。
+プロキシは `127.0.0.1:8081` で待ち受けます。変えるときは `-listen` を指定します。
 
-4. クライアントの送り先を、TTS サーバーからプロキシに変えます。OpenAI の SDK なら、base URL を `http://127.0.0.1:8081/v1` にします。
+### 4. クライアントの送り先を変える
+
+クライアントの送り先を、TTS サーバーからプロキシに変えます。OpenAI の SDK なら、base URL を `http://127.0.0.1:8081/v1` にします。
 
 ## プロキシが書き換える範囲
 
@@ -65,8 +64,7 @@ go-yomikae は、英字がモデルに届く前にカナへ置き換えます。
 パス、メソッド、ヘッダ、ほかのメンバーは変えません。ほかのエンドポイントへのリクエストは、そのまま転送します。
 応答は溜めずに流すので、SSE や PCM のストリームもそのまま届きます。
 
-対象のパスは、今は `/v1/audio/speech` に限っています。OpenAI 互換の API では `/v1/embeddings` や `/v1/responses` も `input` を持つので、全パスを書き換えると TTS 以外の入力まで変わってしまうからです。
-パスの前に何か付くサーバー (`/api/v1/audio/speech` など) では、何も変換せずに転送します。
+対象のパスは、今は `/v1/audio/speech` に限っています。
 
 上限、エラーの応答、細かい条件は [docs/reference.md](docs/reference.md#プロキシ) にあります。
 
@@ -78,7 +76,7 @@ go-yomikae は、英字がモデルに届く前にカナへ置き換えます。
 echo "GitHubで10kgのv1.2" | yomikae -c2k model-c2k.safetensors
 ```
 
-`-trace` を付けると、置き換えごとの記録を JSON で標準エラーに書きます。範囲、手段 (`dictionary`、`model`、`spell`、`drop`)、当たった辞書の項目が分かります。
+`-trace` を付けると、置き換えごとの記録を JSON で標準エラーに書きます。範囲、手段 (`dictionary`、`model`、`spell`、`drop`)、使用された辞書の項目が分かります。
 
 ```bash
 echo "GitHubで10kgのv1.2" | yomikae -c2k model-c2k.safetensors -trace
@@ -122,4 +120,4 @@ yomikae serve -c2k model-c2k.safetensors -upstream http://127.0.0.1:8080 -dict m
 
 ## ライセンス
 
-MIT です。同梱の NGram データは CMUdict (BSD 2-Clause) に由来します。表示は [ngram/NOTICES.md](ngram/NOTICES.md) にあります。
+MIT です。同梱の NGram データは CMUdict (BSD 2-Clause) に由来します。ライセンス表示は [ngram/NOTICES.md](ngram/NOTICES.md) にあります。
