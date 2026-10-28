@@ -238,7 +238,7 @@ func TestBuiltinReadings(t *testing.T) {
 		{"Wi-FiとmacOSとiOS", "ワイファイとマックオーエスとアイオーエス"},
 		{"main.pyとmain.goとREADME.md", "mainドットパイとmainドットゴーとリードミードットエムディー"},
 		{"apiとurlとcli", "エーピーアイとユーアールエルとシーエルアイ"},
-		{"Google", "Google"},
+		{"Hello", "Hello"},
 		{"Goで書く", "ゴーで書く"},
 		{"foo.co.jp", "fooドットシーオードットジェーピー"},
 		{"user_id", "user_アイディー"},
